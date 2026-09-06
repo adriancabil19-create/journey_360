@@ -10,6 +10,7 @@ import '../data/models/circle.dart';
 import '../data/models/enums.dart';
 import '../data/models/journey.dart';
 import '../data/models/live_location.dart';
+import '../data/models/place.dart';
 import '../data/models/sos_alert.dart';
 import '../data/repositories/auth_repository.dart';
 import '../data/repositories/circle_repository.dart';
@@ -154,6 +155,10 @@ final circlesProvider = FutureProvider<List<Circle>>(
 /// Circle currently shown on the live map. The first available circle is used
 /// until the user chooses another one.
 final selectedCircleIdProvider = StateProvider<String?>((ref) => null);
+
+final placesProvider = FutureProvider<List<Place>>(
+  (ref) => ref.watch(circleRepositoryProvider).places(),
+);
 
 final circleMembersProvider =
     StreamProvider.family<List<LiveLocation>, String>((ref, circleId) {

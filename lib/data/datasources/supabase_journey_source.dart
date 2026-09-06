@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/circle.dart';
 import '../models/journey.dart';
 import '../models/live_location.dart';
+import '../models/place.dart';
 import '../models/sos_alert.dart';
 
 /// All Supabase reads/writes for journeys, live locations and circles.
@@ -193,6 +194,41 @@ class SupabaseJourneySource {
         .delete()
         .eq('circle_id', circleId)
         .eq('user_id', userId);
+  }
+
+  Future<List<Place>> fetchPlaces() async {
+    final c = client;
+    final uid = userId;
+    if (c == null || uid == null) return const [];
+    final rows = await c.from('places').select().eq('user_id', uid).order('created_at');
+    return (rows as List)
+        .map((row) => Place.fromJson(row as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<Place> createPlace({
+    required String name,
+    required double latitude,
+    required double longitude,
+    required double radiusMeters,
+  }) async {
+    final c = client;
+    final uid = userId;
+    if (c == null || uid == null) throw StateError('Sign in to save places.');
+    final row = await c.from('places').insert({
+      'user_id': uid,
+      'name': name,
+      'lat': latitude,
+      'lng': longitude,
+      'radius_m': radiusMeters,
+    }).select().single();
+    return Place.fromJson(row);
+  }
+
+  Future<void> deletePlace(String placeId) async {
+    final c = client;
+    if (c == null || userId == null) return;
+    await c.from('places').delete().eq('id', placeId);
   }
 
   /// Realtime stream of member positions for a circle (MD section 59).

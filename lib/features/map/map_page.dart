@@ -13,6 +13,7 @@ import '../../shared/components.dart';
 import '../journey/tracking_controller.dart';
 import '../settings/settings_controller.dart';
 import '../circles/circles_page.dart';
+import 'places_page.dart';
 import 'location_permission_sheet.dart';
 import 'map_tiles.dart';
 
@@ -199,6 +200,12 @@ class _MapPageState extends ConsumerState<MapPage> {
                         icon: Icons.groups_rounded,
                         tooltip: 'Manage circles',
                         onTap: () => context.pushJourney(const CirclesPage()),
+                      ),
+                      const SizedBox(width: 8),
+                      NeoIconButton(
+                        icon: Icons.place_outlined,
+                        tooltip: 'Saved places',
+                        onTap: () => context.pushJourney(const PlacesPage()),
                       ),
                       const SizedBox(width: 8),
                       NeoButton(
