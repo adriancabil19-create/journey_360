@@ -219,6 +219,26 @@ build command clones the Flutter `stable` channel first, then builds web:
 6. Deploy. The SPA rewrite keeps Flutter routing working. First build is slow
    (it downloads Flutter); later builds reuse the cached `flutter/` dir.
 
+### Faster GitHub Actions deploys
+
+For faster production deploys, use `.github/workflows/deploy-web.yml`. GitHub
+Actions caches Flutter, builds the web bundle once, and uploads the finished
+static output to Vercel. Add these GitHub repository secrets:
+
+```text
+SUPABASE_URL
+SUPABASE_PUBLISHABLE_KEY
+SOS_ENDPOINT
+VERCEL_TOKEN
+VERCEL_ORG_ID
+VERCEL_PROJECT_ID
+```
+
+Get `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` from the Vercel project settings or
+by running `vercel link` locally. After confirming the workflow deploys, turn
+off Vercel's automatic Git deployment for this project to avoid two builds per
+push. The existing `vercel.json` build remains available as a fallback.
+
 Vercel hosts the **web frontend only**. It is not the GPS/background backend —
 Supabase handles database, auth and realtime. Mobile builds ship through the
 Play Store / App Store against the same Supabase project.
