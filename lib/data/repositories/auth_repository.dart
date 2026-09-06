@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../config/app_config.dart';
+
 /// Authentication over Supabase (MD section 8). When [client] is null the app is
 /// running in offline mode and these calls are unavailable.
 class AuthRepository {
@@ -17,6 +19,14 @@ class AuthRepository {
   Future<void> signIn({required String email, required String password}) async {
     final c = _require();
     await c.auth.signInWithPassword(email: email.trim(), password: password);
+  }
+
+  Future<void> signInWithGoogle({required String redirectTo}) async {
+    final c = _require();
+    await c.auth.signInWithOAuth(
+      OAuthProvider.google,
+      redirectTo: redirectTo.isEmpty ? AppConfig.authRedirectUrl : redirectTo,
+    );
   }
 
   Future<String?> register({

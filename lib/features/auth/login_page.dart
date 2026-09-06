@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../config/app_config.dart';
 import '../../core/providers.dart';
 import '../../core/utils/page_transition.dart';
 import '../../shared/components.dart';
@@ -39,6 +41,23 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           );
     } catch (e) {
       setState(() => _message = _readable(e));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      _busy = true;
+      _message = null;
+    });
+    try {
+      final redirect = kIsWeb ? Uri.base.origin : AppConfig.authRedirectUrl;
+      await ref.read(authRepositoryProvider).signInWithGoogle(
+            redirectTo: redirect,
+          );
+    } catch (e) {
+      if (mounted) setState(() => _message = _readable(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -143,6 +162,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           label: 'Sign in',
                           busy: _busy,
                           onPressed: (_busy || !backend) ? null : _signIn,
+                        ),
+                        const SizedBox(height: 10),
+                        NeoButton(
+                          label: 'Google sign-in',
+                          icon: Icons.g_mobiledata_rounded,
+                          tone: NeoButtonTone.neutral,
+                          busy: _busy,
+                          onPressed: (_busy || !backend)
+                              ? null
+                              : _signInWithGoogle,
                         ),
                         const SizedBox(height: 4),
                         Wrap(
