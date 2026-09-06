@@ -143,21 +143,9 @@ class SupabaseJourneySource {
     if (c == null || uid == null) {
       throw StateError('Sign in to create a circle.');
     }
-    final code = _inviteCode();
-    final row = await c
-        .from('circles')
-        .insert({
-          'name': name,
-          'type': 'permanent',
-          'owner_id': uid,
-          'invite_code': code,
-        })
-        .select()
-        .single();
-    await c.from('circle_members').insert({
-      'circle_id': row['id'],
-      'user_id': uid,
-      'role': 'owner',
+    final row = await c.rpc('create_circle', params: {
+      'circle_name': name,
+      'circle_type': 'permanent',
     });
     return Circle.fromJson(row);
   }
@@ -300,15 +288,4 @@ class SupabaseJourneySource {
         });
   }
 
-  String _inviteCode() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    final now = DateTime.now().microsecondsSinceEpoch;
-    final buffer = StringBuffer();
-    var seed = now;
-    for (var i = 0; i < 6; i++) {
-      buffer.write(chars[seed % chars.length]);
-      seed = seed ~/ chars.length + 7;
-    }
-    return buffer.toString();
-  }
 }

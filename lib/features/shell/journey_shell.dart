@@ -8,9 +8,12 @@ import '../../core/theme/glass.dart';
 import '../../core/providers.dart';
 import '../../services/crash_detector.dart';
 import '../activity/activity_page.dart';
+import '../activity/activity_history_page.dart';
 import '../analytics/analytics_page.dart';
 import '../journey/tracking_controller.dart';
 import '../map/map_page.dart';
+import '../map/places_page.dart';
+import '../profile/profile_page.dart';
 
 /// The three-mode Journey360 shell: family safety, workouts, and performance.
 class JourneyShell extends ConsumerStatefulWidget {
@@ -31,13 +34,19 @@ class _JourneyShellState extends ConsumerState<JourneyShell> {
   static const _pages = [
     MapPage(),
     ActivityPage(),
+    ActivityHistoryPage(),
+    PlacesPage(),
     AnalyticsPage(),
+    ProfilePage(),
   ];
 
   static const _items = [
     _NavItem('Circle', Icons.shield_rounded, Icons.shield_outlined),
     _NavItem('Workout', Icons.bolt_rounded, Icons.bolt_outlined),
+    _NavItem('History', Icons.timeline_rounded, Icons.timeline_outlined),
+    _NavItem('Places', Icons.place_rounded, Icons.place_outlined),
     _NavItem('Insights', Icons.insights_rounded, Icons.insights_outlined),
+    _NavItem('Profile', Icons.person_rounded, Icons.person_outline),
   ];
 
   @override
