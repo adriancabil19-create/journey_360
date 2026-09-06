@@ -111,10 +111,9 @@ Key packages: `flutter_riverpod`, `supabase_flutter`, `geolocator`,
 2. In the SQL editor, run the migrations **in order**:
    - `supabase/migrations/001_initial_schema.sql`
    - `supabase/migrations/002_journey360_core.sql`
-  - `supabase/migrations/003_circle_management.sql`
-  - `supabase/migrations/004_backend_contract.sql`
-    - `supabase/migrations/005_google_profile_sync.sql`
-  3. Auth → Providers: enable **Email** and **Google**.
+   - `supabase/migrations/003_circle_management.sql`
+   - `supabase/migrations/004_backend_contract.sql`
+3. Auth → Providers: enable **Email**.
 4. Project settings → API: copy the **Project URL** and the **publishable
    (anon) key**. Row Level Security is enabled by every migration — only the
    publishable key belongs in the app.
@@ -149,27 +148,6 @@ Journey360 runs in offline mode.
 Copy `dart_defines.example.json` to `dart_defines.json` (gitignored) and fill it
 in.
 
-### Google sign-in setup
-
-In Supabase, open **Authentication → Providers → Google**, enable Google, and
-paste the Google OAuth Client ID and Client Secret from Google Cloud Console.
-Add these Supabase callback URLs to the Google OAuth client's authorized
-redirect URIs:
-
-```text
-https://dhcovzizgryuyexndyrq.supabase.co/auth/v1/callback
-```
-
-For the web app, add your deployed URL to **Authentication → URL Configuration**
-as both the Site URL and an allowed redirect URL, for example:
-
-```text
-https://journey360-iota.vercel.app
-```
-
-The login screen's **Continue with Google** button then uses the Supabase OAuth
-flow and the `005_google_profile_sync.sql` trigger stores the Google name and
-avatar in `profiles`.
 ## Running locally
 
 ```bash

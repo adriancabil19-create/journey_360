@@ -1,5 +1,4 @@
 {
   "SUPABASE_URL": "https://your-project.supabase.co",
-  "SUPABASE_PUBLISHABLE_KEY": "your-publishable-or-anon-key",
-  "AUTH_REDIRECT_URL": "journey360://login-callback"
+  "SUPABASE_PUBLISHABLE_KEY": "your-publishable-or-anon-key"
 }
