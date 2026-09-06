@@ -180,6 +180,21 @@ class SupabaseJourneySource {
     });
   }
 
+  Future<void> removeCircleMember({
+    required String circleId,
+    required String userId,
+  }) async {
+    final c = client;
+    if (c == null || this.userId == null) {
+      throw StateError('Sign in to manage circle members.');
+    }
+    await c
+        .from('circle_members')
+        .delete()
+        .eq('circle_id', circleId)
+        .eq('user_id', userId);
+  }
+
   /// Realtime stream of member positions for a circle (MD section 59).
   Stream<List<LiveLocation>> watchCircleMembers(String circleId) async* {
     final c = client;

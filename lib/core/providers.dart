@@ -151,6 +151,10 @@ final circlesProvider = FutureProvider<List<Circle>>(
   (ref) => ref.watch(circleRepositoryProvider).circles(),
 );
 
+/// Circle currently shown on the live map. The first available circle is used
+/// until the user chooses another one.
+final selectedCircleIdProvider = StateProvider<String?>((ref) => null);
+
 final circleMembersProvider =
     StreamProvider.family<List<LiveLocation>, String>((ref, circleId) {
   return ref.watch(circleRepositoryProvider).watchMembers(circleId);

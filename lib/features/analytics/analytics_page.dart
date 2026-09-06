@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
+import '../../core/utils/page_transition.dart';
 import '../../shared/components.dart';
 import '../journey/tracking_controller.dart';
+import '../settings/settings_page.dart';
 
 class AnalyticsPage extends ConsumerWidget {
   const AnalyticsPage({super.key});
@@ -32,6 +34,12 @@ class AnalyticsPage extends ConsumerWidget {
                     ],
                   ),
                 ),
+                NeoIconButton(
+                  icon: Icons.settings_outlined,
+                  tooltip: 'Settings and notifications',
+                  onTap: () => context.pushJourney(const SettingsPage()),
+                ),
+                const SizedBox(width: 10),
                 _VipBadge(color: c.accent),
               ],
             ),

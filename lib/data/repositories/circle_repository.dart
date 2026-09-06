@@ -20,6 +20,9 @@ class CircleRepository {
 
   Future<void> join(String inviteCode) => _remote.joinCircle(inviteCode);
 
+    Future<void> removeMember({required String circleId, required String userId}) =>
+            _remote.removeCircleMember(circleId: circleId, userId: userId);
+
   Stream<List<LiveLocation>> watchMembers(String circleId) =>
       _remote.watchCircleMembers(circleId);
 }

@@ -132,6 +132,8 @@ create policy "users update their profile" on public.profiles for update to auth
 
 create policy "members can read circles" on public.circles for select to authenticated using (public.is_circle_member(id));
 create policy "members can read membership" on public.circle_members for select to authenticated using (public.is_circle_member(circle_id));
+create policy "users join circles" on public.circle_members for insert to authenticated with check (user_id = auth.uid());
+create policy "circle owners remove members" on public.circle_members for delete to authenticated using (exists (select 1 from public.circles c where c.id = circle_members.circle_id and c.owner_id = auth.uid()));
 create policy "owners manage circles" on public.circles for all to authenticated using (owner_id = auth.uid()) with check (owner_id = auth.uid());
 create policy "members can read places" on public.places for select to authenticated using (public.is_circle_member(circle_id));
 create policy "members manage places" on public.places for all to authenticated using (public.is_circle_member(circle_id, auth.uid()));

@@ -19,6 +19,8 @@ class CircleDetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.colors;
     final membersAsync = ref.watch(circleMembersProvider(circle.id));
+    final currentUserId = ref.watch(authRepositoryProvider).currentUser?.id;
+    final canManageMembers = circle.ownerId == currentUserId;
 
     return GlassScaffold(
       appBar: GlassAppBar(
@@ -94,7 +96,12 @@ class CircleDetailPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: 18),
                 NeoSectionHeader('${members.length} members'),
-                for (final m in members) _MemberRow(member: m),
+                for (final m in members)
+                  _MemberRow(
+                    member: m,
+                    canRemove: canManageMembers && m.userId != currentUserId,
+                    onRemove: () => _removeMember(context, ref, m),
+                  ),
               ],
             );
           },
@@ -102,11 +109,49 @@ class CircleDetailPage extends ConsumerWidget {
       ),
     );
   }
+
+  Future<void> _removeMember(
+    BuildContext context,
+    WidgetRef ref,
+    LiveLocation member,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Remove person?'),
+        content: Text('${member.displayName} will no longer see or share location in this circle.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Remove')),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    try {
+      await ref.read(circleRepositoryProvider).removeMember(
+            circleId: circle.id,
+            userId: member.userId,
+          );
+      ref.invalidate(circleMembersProvider(circle.id));
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not remove member: $error')),
+        );
+      }
+    }
+  }
 }
 
 class _MemberRow extends StatelessWidget {
-  const _MemberRow({required this.member});
+  const _MemberRow({
+    required this.member,
+    required this.canRemove,
+    required this.onRemove,
+  });
   final LiveLocation member;
+  final bool canRemove;
+  final VoidCallback onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -141,6 +186,13 @@ class _MemberRow extends StatelessWidget {
               Text('${member.batteryLevel}%',
                   style: TextStyle(
                       color: c.onSurfaceMuted, fontWeight: FontWeight.w700)),
+            if (canRemove)
+              IconButton(
+                icon: const Icon(Icons.person_remove_outlined),
+                color: c.danger,
+                tooltip: 'Remove person',
+                onPressed: onRemove,
+              ),
           ],
         ),
       ),

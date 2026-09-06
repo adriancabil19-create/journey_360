@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:latlong2/latlong.dart' hide Circle;
 
 import '../../core/providers.dart';
 import '../../core/services/location_service.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/utils/page_transition.dart';
+import '../../data/models/circle.dart';
 import '../../data/models/live_location.dart';
 import '../../shared/components.dart';
 import '../journey/tracking_controller.dart';
 import '../settings/settings_controller.dart';
+import '../circles/circles_page.dart';
 import 'location_permission_sheet.dart';
 import 'map_tiles.dart';
 
@@ -74,8 +77,15 @@ class _MapPageState extends ConsumerState<MapPage> {
     final settings = ref.watch(settingsControllerProvider);
     final backend = ref.watch(backendEnabledProvider);
     final circles = ref.watch(circlesProvider).valueOrNull ?? const [];
+    final selectedId = ref.watch(selectedCircleIdProvider);
+    final selectedCircle = circles.isEmpty
+        ? null
+        : circles.firstWhere(
+            (circle) => circle.id == selectedId,
+            orElse: () => circles.first,
+          );
     final activeAlert = backend && circles.isNotEmpty
-      ? ref.watch(activeSosProvider(circles.first.id)).valueOrNull
+      ? ref.watch(activeSosProvider(selectedCircle!.id)).valueOrNull
       : null;
 
     ref.listen(trackingControllerProvider, (prev, next) {
@@ -85,13 +95,12 @@ class _MapPageState extends ConsumerState<MapPage> {
       }
     });
 
-    // Live circle members from the first circle, when a backend is present.
+    // Live circle members from the selected circle, when a backend is present.
     final members = <LiveLocation>[];
     if (backend) {
-      final circles = ref.watch(circlesProvider).valueOrNull ?? const [];
-      if (circles.isNotEmpty) {
+      if (selectedCircle != null) {
         members.addAll(
-          ref.watch(circleMembersProvider(circles.first.id)).valueOrNull ??
+          ref.watch(circleMembersProvider(selectedCircle.id)).valueOrNull ??
               const [],
         );
       }
@@ -186,6 +195,12 @@ class _MapPageState extends ConsumerState<MapPage> {
                             .toggleSharing(),
                       ),
                       const Spacer(),
+                      NeoIconButton(
+                        icon: Icons.groups_rounded,
+                        tooltip: 'Manage circles',
+                        onTap: () => context.pushJourney(const CirclesPage()),
+                      ),
+                      const SizedBox(width: 8),
                       NeoButton(
                         label: 'SOS',
                         icon: Icons.sos_rounded,
@@ -197,6 +212,16 @@ class _MapPageState extends ConsumerState<MapPage> {
                       ),
                     ],
                   ),
+                  if (selectedCircle != null) ...[
+                    const SizedBox(height: 10),
+                    _CirclePicker(
+                      circles: circles,
+                      selected: selectedCircle,
+                      onSelected: (id) => ref
+                          .read(selectedCircleIdProvider.notifier)
+                          .state = id,
+                    ),
+                  ],
                   if (activeAlert != null) ...[
                     const SizedBox(height: 10),
                     GlassPanel(
@@ -211,7 +236,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'SOS active in ${circles.first.name}',
+                              'SOS active in ${selectedCircle!.name}',
                               style: TextStyle(
                                 color: c.onSurface,
                                 fontWeight: FontWeight.w800,
@@ -302,12 +327,17 @@ class _MapPageState extends ConsumerState<MapPage> {
   Future<void> _sendSos() async {
     final circles = ref.read(circlesProvider).valueOrNull ?? const [];
     if (circles.isEmpty) return;
+    final selectedId = ref.read(selectedCircleIdProvider);
+    final circle = circles.firstWhere(
+      (item) => item.id == selectedId,
+      orElse: () => circles.first,
+    );
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Send SOS?'),
         content: Text(
-          'Your ${circles.first.name} circle will receive an emergency alert '
+          'Your ${circle.name} circle will receive an emergency alert '
           'with your current location.',
         ),
         actions: [
@@ -329,7 +359,7 @@ class _MapPageState extends ConsumerState<MapPage> {
     try {
       final here = ref.read(trackingControllerProvider).here;
       await ref.read(supabaseSourceProvider).sendSos(
-            circleId: circles.first.id,
+        circleId: circle.id,
             latitude: here?.latitude,
             longitude: here?.longitude,
           );
@@ -343,6 +373,66 @@ class _MapPageState extends ConsumerState<MapPage> {
         SnackBar(content: Text('Could not send SOS: $error')),
       );
     }
+  }
+}
+
+class _CirclePicker extends StatelessWidget {
+  const _CirclePicker({
+    required this.circles,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final List<Circle> circles;
+  final Circle selected;
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return GlassPanel(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      child: Row(
+        children: [
+          Icon(Icons.shield_rounded, color: c.accent, size: 18),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              selected.name,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: c.onSurface, fontWeight: FontWeight.w800),
+            ),
+          ),
+          PopupMenuButton<String>(
+            tooltip: 'Switch circle',
+            initialValue: selected.id,
+            onSelected: onSelected,
+            icon: Icon(Icons.expand_more_rounded, color: c.onSurfaceMuted),
+            itemBuilder: (context) => [
+              for (final circle in circles)
+                PopupMenuItem<String>(
+                  value: circle.id,
+                  child: Row(
+                    children: [
+                      Icon(
+                        circle.id == selected.id
+                            ? Icons.radio_button_checked
+                            : Icons.radio_button_unchecked,
+                        size: 18,
+                        color: circle.id == selected.id
+                            ? c.accent
+                            : c.onSurfaceMuted,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(circle.name),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
