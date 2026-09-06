@@ -1,8 +1,14 @@
 create extension if not exists pgcrypto;
 
-create type public.circle_type as enum ('permanent', 'temporary');
-create type public.member_role as enum ('owner', 'member');
-create type public.trip_status as enum ('active', 'paused', 'completed');
+do $$ begin
+  create type public.circle_type as enum ('permanent', 'temporary');
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create type public.member_role as enum ('owner', 'member');
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create type public.trip_status as enum ('active', 'paused', 'completed');
+exception when duplicate_object then null; end $$;
 
 create table public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,

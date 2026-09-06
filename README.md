@@ -124,6 +124,12 @@ Key packages: `flutter_riverpod`, `supabase_flutter`, `geolocator`,
    (anon) key**. Row Level Security is enabled by every migration — only the
    publishable key belongs in the app.
 
+For a project where migrations were already partly run, do **not** rerun
+`001` through `004`. Run only `006_final_hardening.sql`; it repairs existing
+tables, policies, triggers, indexes, and realtime entries without deleting
+data. The migration files are safe to use in a new empty project in the order
+shown above.
+
 ### Database
 
 `002_journey360_core.sql` adds the Journey360 core: `journeys`, `journey_points`,

@@ -7,6 +7,9 @@
 drop policy if exists "owners create circles" on public.circles;
 drop policy if exists "owners manage circles" on public.circles;
 drop policy if exists "circle members can read circles" on public.circles;
+drop policy if exists "authenticated owners create circles" on public.circles;
+drop policy if exists "circle members read circles" on public.circles;
+drop policy if exists "circle owners update circles" on public.circles;
 create policy "authenticated owners create circles" on public.circles
   for insert to authenticated
   with check (auth.uid() is not null and owner_id = auth.uid());
