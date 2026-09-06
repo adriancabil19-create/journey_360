@@ -41,26 +41,54 @@ class _MapPageState extends ConsumerState<MapPage> {
     final service = ref.read(locationServiceProvider);
     final access = await service.currentAccess();
     if (access == LocationAccess.granted) {
+      await ref.read(sharedPreferencesProvider).setBool(
+            'journey360.location-granted-before',
+            true,
+          );
       await ref.read(trackingControllerProvider.notifier).enablePassiveTracking();
       return;
     }
-    if (_askedThisSession || !mounted) return;
+    final grantedBefore = ref
+            .read(sharedPreferencesProvider)
+            .getBool('journey360.location-granted-before') ??
+        false;
+    if (_askedThisSession || grantedBefore || !mounted) {
+      if (grantedBefore && mounted) {
+        final retry = await ref
+            .read(trackingControllerProvider.notifier)
+            .enablePassiveTracking();
+        if (retry == LocationAccess.deniedForever && mounted) {
+          _showLocationSettingsMessage(service);
+        }
+      }
+      return;
+    }
     _askedThisSession = true;
     final proceed = await showLocationRationale(context);
     if (proceed != true || !mounted) return;
     final result =
         await ref.read(trackingControllerProvider.notifier).enablePassiveTracking();
-    if (result == LocationAccess.deniedForever && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Location is blocked in system settings.'),
-          action: SnackBarAction(
-            label: 'Open',
-            onPressed: () => service.openAppSettings(),
-          ),
-        ),
-      );
+    if (result == LocationAccess.granted) {
+      await ref.read(sharedPreferencesProvider).setBool(
+            'journey360.location-granted-before',
+            true,
+          );
     }
+    if (result == LocationAccess.deniedForever && mounted) {
+      _showLocationSettingsMessage(service);
+    }
+  }
+
+  void _showLocationSettingsMessage(LocationService service) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Location is blocked in system settings.'),
+        action: SnackBarAction(
+          label: 'Open',
+          onPressed: () => service.openAppSettings(),
+        ),
+      ),
+    );
   }
 
   void _recenter() {
