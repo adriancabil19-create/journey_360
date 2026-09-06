@@ -14,7 +14,6 @@ import '../journey/tracking_controller.dart';
 import '../settings/settings_controller.dart';
 import '../circles/circles_page.dart';
 import '../settings/feature_pages.dart';
-import '../vehicles/vehicles_page.dart';
 import 'places_page.dart';
 import 'location_permission_sheet.dart';
 import 'map_tiles.dart';
@@ -328,6 +327,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                   circle: selectedCircle,
                   circles: circles,
                   members: members,
+                  travelMode: state.travelMode,
                   scrollController: scrollController,
                   onCircleSelected: (id) => ref
                       .read(selectedCircleIdProvider.notifier)
@@ -336,7 +336,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                   onAddPerson: () => context.pushJourney(const CirclesPage()),
                   onPlaces: () => context.pushJourney(const PlacesPage()),
                   onSettings: () => context.pushJourney(const SmartNotificationsPage()),
-                  onVehicles: () => context.pushJourney(const VehiclesPage()),
                 ),
               ),
             )
@@ -615,25 +614,25 @@ class _CircleHomeSheet extends StatelessWidget {
     required this.circle,
     required this.circles,
     required this.members,
+    required this.travelMode,
     required this.scrollController,
     required this.onCircleSelected,
     required this.onManage,
     required this.onAddPerson,
     required this.onPlaces,
     required this.onSettings,
-    required this.onVehicles,
   });
 
   final Circle circle;
   final List<Circle> circles;
   final List<LiveLocation> members;
+  final TravelMode travelMode;
   final ScrollController scrollController;
   final ValueChanged<String> onCircleSelected;
   final VoidCallback onManage;
   final VoidCallback onAddPerson;
   final VoidCallback onPlaces;
   final VoidCallback onSettings;
-  final VoidCallback onVehicles;
 
   @override
   Widget build(BuildContext context) {
@@ -655,6 +654,31 @@ class _CircleHomeSheet extends StatelessWidget {
               width: 42,
               height: 5,
               decoration: BoxDecoration(color: c.onSurfaceMuted.withValues(alpha: .28), borderRadius: BorderRadius.circular(8)),
+            ),
+          ),
+          const SizedBox(height: 14),
+          NeoCard(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+            child: Row(
+              children: [
+                Icon(
+                  travelMode == TravelMode.driving
+                      ? Icons.directions_car_filled_rounded
+                      : Icons.speed_rounded,
+                  color: travelMode == TravelMode.driving ? c.drive : c.accent,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    travelMode == TravelMode.driving
+                        ? 'Driving detected from GPS speed'
+                        : 'Travel mode: ${travelMode.label}',
+                    style: TextStyle(color: c.onSurface, fontWeight: FontWeight.w800),
+                  ),
+                ),
+                if (travelMode == TravelMode.driving)
+                  Text('AUTO', style: TextStyle(color: c.drive, fontSize: 11, fontWeight: FontWeight.w900)),
+              ],
             ),
           ),
           const SizedBox(height: 14),
@@ -694,7 +718,6 @@ class _CircleHomeSheet extends StatelessWidget {
           _SheetQuickActions(
             onAddPerson: onAddPerson,
             onPlaces: onPlaces,
-            onVehicles: onVehicles,
             onManage: onManage,
           ),
           const SizedBox(height: 18),
@@ -716,7 +739,7 @@ class _CircleHomeSheet extends StatelessWidget {
           const SizedBox(height: 10),
           _SheetFeatureRow(icon: Icons.notifications_active_outlined, title: 'Smart notifications', subtitle: 'Circle alerts and activity updates', onTap: onSettings),
           _SheetFeatureRow(icon: Icons.place_outlined, title: 'Saved places', subtitle: 'Home, work, school and geofences', onTap: onPlaces),
-          _SheetFeatureRow(icon: Icons.directions_car_outlined, title: 'Vehicles', subtitle: 'Driving reports and vehicle profiles', onTap: onVehicles),
+          _SheetFeatureRow(icon: Icons.speed_rounded, title: 'Auto travel detection', subtitle: 'Driving is detected from sustained GPS speed', onTap: onManage),
           _SheetFeatureRow(icon: Icons.shield_outlined, title: 'Circle management', subtitle: 'Invite, remove, or switch circles', onTap: onManage),
         ],
       ),
@@ -725,10 +748,9 @@ class _CircleHomeSheet extends StatelessWidget {
 }
 
 class _SheetQuickActions extends StatelessWidget {
-  const _SheetQuickActions({required this.onAddPerson, required this.onPlaces, required this.onVehicles, required this.onManage});
+  const _SheetQuickActions({required this.onAddPerson, required this.onPlaces, required this.onManage});
   final VoidCallback onAddPerson;
   final VoidCallback onPlaces;
-  final VoidCallback onVehicles;
   final VoidCallback onManage;
 
   @override
@@ -738,7 +760,7 @@ class _SheetQuickActions extends StatelessWidget {
       children: [
         _QuickAction(icon: Icons.group_add_rounded, label: 'Invite', onTap: onAddPerson, color: c.accent),
         _QuickAction(icon: Icons.place_rounded, label: 'Places', onTap: onPlaces, color: c.run),
-        _QuickAction(icon: Icons.directions_car_rounded, label: 'Drive', onTap: onVehicles, color: c.drive),
+        _QuickAction(icon: Icons.speed_rounded, label: 'Travel', onTap: onManage, color: c.drive),
         _QuickAction(icon: Icons.swap_horiz_rounded, label: 'Switch', onTap: onManage, color: c.cycle),
       ],
     );

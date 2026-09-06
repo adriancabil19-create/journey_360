@@ -50,6 +50,9 @@ tiers (Flutter + Supabase + Vercel + OpenStreetMap).
   unsynced journeys are pushed up automatically.
 - **Last-known location continuity**: the latest location and timestamp are
   restored after a refresh or reopen so the map does not appear to reset.
+- **Automatic travel-mode detection**: sustained GPS speed identifies driving
+  automatically and shares the detected activity state with the Circle. This
+  is phone-GPS classification, not vehicle or OBD telemetry.
 - Light / dark / system theme, persisted. Settings for sharing scope, default
   activity visibility (defaults to **Private**), GPS profile and notifications.
 

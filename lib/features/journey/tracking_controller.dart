@@ -16,6 +16,18 @@ import 'journey_recorder.dart';
 
 enum TrackingPhase { idle, tracking, paused }
 
+enum TravelMode { stationary, walking, running, cycling, driving }
+
+extension TravelModeLabel on TravelMode {
+  String get label => switch (this) {
+        TravelMode.stationary => 'Stationary',
+        TravelMode.walking => 'Walking',
+        TravelMode.running => 'Running',
+        TravelMode.cycling => 'Cycling',
+        TravelMode.driving => 'Driving',
+      };
+}
+
 class TrackingState {
   const TrackingState({
     this.phase = TrackingPhase.idle,
@@ -29,6 +41,7 @@ class TrackingState {
     this.autoPaused = false,
     this.persistedHere,
     this.lastFixAt,
+    this.travelMode = TravelMode.stationary,
   });
 
   final TrackingPhase phase;
@@ -42,6 +55,7 @@ class TrackingState {
   final bool autoPaused;
   final LatLng? persistedHere;
   final DateTime? lastFixAt;
+  final TravelMode travelMode;
 
   bool get isRecording =>
       phase == TrackingPhase.tracking || phase == TrackingPhase.paused;
@@ -62,6 +76,7 @@ class TrackingState {
     bool? autoPaused,
     LatLng? persistedHere,
     DateTime? lastFixAt,
+    TravelMode? travelMode,
   }) {
     return TrackingState(
       phase: phase ?? this.phase,
@@ -75,6 +90,7 @@ class TrackingState {
       autoPaused: autoPaused ?? this.autoPaused,
       persistedHere: persistedHere ?? this.persistedHere,
       lastFixAt: lastFixAt ?? this.lastFixAt,
+      travelMode: travelMode ?? this.travelMode,
     );
   }
 
@@ -97,6 +113,8 @@ class TrackingController extends StateNotifier<TrackingState> {
   Timer? _snapshotTimer;
   JourneyRecorder? _recorder;
   DateTime? _lowSpeedSince;
+  int _fastFixes = 0;
+  int _slowFixes = 0;
 
   static const _autoPauseSpeed = 0.7; // m/s (~2.5 km/h)
   static const _autoResumeSpeed = 1.3; // m/s (~4.7 km/h)
@@ -141,11 +159,13 @@ class TrackingController extends StateNotifier<TrackingState> {
 
   void _onPassiveFix(Position position) {
     if (!mounted) return;
+    final mode = _detectTravelMode(position.speed);
     state = state.copyWith(
       lastPosition: position,
       persistedHere: LatLng(position.latitude, position.longitude),
       lastFixAt: position.timestamp,
       signalQuality: SignalQuality.fromAccuracy(position.accuracy),
+      travelMode: mode,
     );
     final prefs = _ref.read(sharedPreferencesProvider);
     prefs.setDouble('journey360.last-latitude', position.latitude);
@@ -154,7 +174,9 @@ class TrackingController extends StateNotifier<TrackingState> {
       'journey360.last-fix-at',
       position.timestamp.toIso8601String(),
     );
-    if (!state.isRecording) _maybeBroadcast(position, activity: null);
+    if (!state.isRecording) {
+      _maybeBroadcast(position, activity: mode.label);
+    }
   }
 
   // --- Recording -------------------------------------------------------
@@ -237,13 +259,15 @@ class TrackingController extends StateNotifier<TrackingState> {
     final recorder = _recorder;
     if (recorder == null || !mounted) return;
     recorder.add(_sampleOf(position));
+    final mode = _detectTravelMode(position.speed);
     _maybeAutoResume(position);
     state = state.copyWith(
       lastPosition: position,
       signalQuality: SignalQuality.fromAccuracy(position.accuracy),
+      travelMode: mode,
     );
     _refreshStats();
-    _maybeBroadcast(position, activity: recorder.type.verb);
+    _maybeBroadcast(position, activity: '${recorder.type.verb} · ${mode.label}');
   }
 
   void _refreshStats() {
@@ -412,6 +436,29 @@ class TrackingController extends StateNotifier<TrackingState> {
     } catch (_) {
       // Best-effort; the journey itself is safe locally.
     }
+  }
+
+  TravelMode _detectTravelMode(double speedMps) {
+    final speed = speedMps.isFinite && speedMps >= 0 ? speedMps : 0.0;
+    // Require repeated fixes before switching into/out of driving mode. This
+    // avoids a single inaccurate GPS jump being presented as a vehicle trip.
+    if (speed >= 8.0) {
+      _fastFixes = _fastFixes < 5 ? _fastFixes + 1 : 5;
+      _slowFixes = 0;
+      if (_fastFixes >= 3 || state.travelMode == TravelMode.driving) {
+        return TravelMode.driving;
+      }
+    } else {
+      _slowFixes = _slowFixes < 5 ? _slowFixes + 1 : 5;
+      if (_slowFixes >= 3) _fastFixes = 0;
+      if (state.travelMode == TravelMode.driving && _slowFixes < 3) {
+        return TravelMode.driving;
+      }
+    }
+    if (speed < 0.7) return TravelMode.stationary;
+    if (speed < 2.2) return TravelMode.walking;
+    if (speed < 5.0) return TravelMode.running;
+    return TravelMode.cycling;
   }
 
   // --- Helpers -------------------------------------------------------
