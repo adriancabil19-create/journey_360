@@ -48,6 +48,8 @@ tiers (Flutter + Supabase + Vercel + OpenStreetMap).
 - **Offline-first persistence**: every journey is written to on-device storage
   first, so a network drop never loses a recording. When a backend is configured,
   unsynced journeys are pushed up automatically.
+- **Last-known location continuity**: the latest location and timestamp are
+  restored after a refresh or reopen so the map does not appear to reset.
 - Light / dark / system theme, persisted. Settings for sharing scope, default
   activity visibility (defaults to **Private**), GPS profile and notifications.
 
@@ -252,9 +254,11 @@ Play Store / App Store against the same Supabase project.
 ## GPS limitations
 
 - **Web**: works over HTTPS/localhost; **no background** — recording pauses when
-  the tab is backgrounded/closed.
+  the tab is backgrounded/closed. The app restores the last known location, but
+  it cannot collect new GPS fixes while the browser process is closed.
 - **Android**: reliable in the foreground; background needs "Allow all the time"
-  and a foreground service.
+  notifications, and a foreground service. Force-closing the app can still stop
+  OS location delivery.
 - **iOS**: background updates are OS-throttled and can be suspended.
 - Accuracy depends on the device and surroundings; poor and impossible fixes are
   filtered out of statistics.

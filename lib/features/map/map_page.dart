@@ -598,7 +598,9 @@ class _StatusCard extends StatelessWidget {
             child: Text(
               state.here == null
                   ? 'Finding your location…'
-                  : 'You are here. Start an activity to record a route.',
+                  : state.lastPosition == null && state.lastFixAt != null
+                      ? 'Last known location ${Fmt.ago(state.lastFixAt)}. Waiting for a fresh fix.'
+                      : 'You are here. Start an activity to record a route.',
               style: TextStyle(color: c.onSurfaceMuted),
             ),
           ),

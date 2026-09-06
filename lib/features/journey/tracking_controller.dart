@@ -27,6 +27,8 @@ class TrackingState {
     this.liveSharing = false,
     this.signalQuality = SignalQuality.none,
     this.autoPaused = false,
+    this.persistedHere,
+    this.lastFixAt,
   });
 
   final TrackingPhase phase;
@@ -38,12 +40,14 @@ class TrackingState {
   final bool liveSharing;
   final SignalQuality signalQuality;
   final bool autoPaused;
+  final LatLng? persistedHere;
+  final DateTime? lastFixAt;
 
   bool get isRecording =>
       phase == TrackingPhase.tracking || phase == TrackingPhase.paused;
 
   LatLng? get here => lastPosition == null
-      ? null
+      ? persistedHere
       : LatLng(lastPosition!.latitude, lastPosition!.longitude);
 
   TrackingState copyWith({
@@ -56,6 +60,8 @@ class TrackingState {
     bool? liveSharing,
     SignalQuality? signalQuality,
     bool? autoPaused,
+    LatLng? persistedHere,
+    DateTime? lastFixAt,
   }) {
     return TrackingState(
       phase: phase ?? this.phase,
@@ -67,6 +73,8 @@ class TrackingState {
       liveSharing: liveSharing ?? this.liveSharing,
       signalQuality: signalQuality ?? this.signalQuality,
       autoPaused: autoPaused ?? this.autoPaused,
+      persistedHere: persistedHere ?? this.persistedHere,
+      lastFixAt: lastFixAt ?? this.lastFixAt,
     );
   }
 
@@ -99,6 +107,16 @@ class TrackingController extends StateNotifier<TrackingState> {
   // --- Passive location (map / dashboard) --------------------------------
 
   Future<LocationAccess> enablePassiveTracking() async {
+    final prefs = _ref.read(sharedPreferencesProvider);
+    final savedLatitude = prefs.getDouble('journey360.last-latitude');
+    final savedLongitude = prefs.getDouble('journey360.last-longitude');
+    final savedAt = prefs.getString('journey360.last-fix-at');
+    if (savedLatitude != null && savedLongitude != null && mounted) {
+      state = state.copyWith(
+        persistedHere: LatLng(savedLatitude, savedLongitude),
+        lastFixAt: DateTime.tryParse(savedAt ?? ''),
+      );
+    }
     final access = await _location.ensurePermission();
     state = state.copyWith(access: access);
     if (access != LocationAccess.granted) {
@@ -107,7 +125,11 @@ class TrackingController extends StateNotifier<TrackingState> {
     }
     state = state.copyWith(error: null);
     _passiveSub ??= _location
-        .positionStream(profile: TrackingProfile.batterySaver)
+        .positionStream(
+          profile: TrackingProfile.batterySaver,
+          background: true,
+          distanceFilter: 50,
+        )
         .listen(_onPassiveFix, onError: (_) {
       state = state.copyWith(error: 'Location updates were interrupted.');
     });
@@ -121,7 +143,16 @@ class TrackingController extends StateNotifier<TrackingState> {
     if (!mounted) return;
     state = state.copyWith(
       lastPosition: position,
+      persistedHere: LatLng(position.latitude, position.longitude),
+      lastFixAt: position.timestamp,
       signalQuality: SignalQuality.fromAccuracy(position.accuracy),
+    );
+    final prefs = _ref.read(sharedPreferencesProvider);
+    prefs.setDouble('journey360.last-latitude', position.latitude);
+    prefs.setDouble('journey360.last-longitude', position.longitude);
+    prefs.setString(
+      'journey360.last-fix-at',
+      position.timestamp.toIso8601String(),
     );
     if (!state.isRecording) _maybeBroadcast(position, activity: null);
   }
