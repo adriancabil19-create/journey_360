@@ -156,16 +156,8 @@ class SupabaseJourneySource {
     if (c == null || uid == null) {
       throw StateError('Sign in to join a circle.');
     }
-    final circle = await c
-        .from('circles')
-        .select('id')
-        .eq('invite_code', inviteCode.trim().toUpperCase())
-        .maybeSingle();
-    if (circle == null) throw StateError('That invite code was not found.');
-    await c.from('circle_members').upsert({
-      'circle_id': circle['id'],
-      'user_id': uid,
-      'role': 'member',
+    await c.rpc('join_circle', params: {
+      'join_code': inviteCode.trim().toUpperCase(),
     });
   }
 
