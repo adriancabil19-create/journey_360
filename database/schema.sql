@@ -6,7 +6,7 @@ create type public.circle_role as enum ('owner', 'member');
 
 create table public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
-  display_name text not null default 'KinPulse member',
+  display_name text not null default 'Journey360 member',
   avatar_url text,
   is_vip boolean not null default true,
   created_at timestamptz not null default now(),

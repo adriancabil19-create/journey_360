@@ -34,7 +34,7 @@ Future<bool?> showLocationRationale(BuildContext context) {
           ),
           const SizedBox(height: 8),
           Text(
-            'KinPulse needs your location to record workouts and show your '
+            'Journey360 needs your location to record workouts and show your '
             'position to people you have chosen. You control sharing at any '
             'time, and you can stop it from the map.',
             style: TextStyle(color: c.onSurfaceMuted, height: 1.45),

@@ -124,7 +124,7 @@ class LocationService {
           distanceFilter: distanceFilter,
           foregroundNotificationConfig: background
               ? const ForegroundNotificationConfig(
-                  notificationTitle: 'KinPulse is recording your workout',
+                  notificationTitle: 'Journey360 is recording your workout',
                   notificationText: 'Tap to return to the app',
                   enableWakeLock: true,
                 )

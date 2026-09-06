@@ -410,7 +410,7 @@ class TrackingController extends StateNotifier<TrackingState> {
         LocationAccess.serviceDisabled =>
           'Location services are turned off on this device.',
         LocationAccess.denied =>
-          'KinPulse needs location access to record workouts.',
+          'Journey360 needs location access to record workouts.',
         LocationAccess.deniedForever =>
           'Location permission is blocked. Enable it in system settings.',
         LocationAccess.unavailable =>

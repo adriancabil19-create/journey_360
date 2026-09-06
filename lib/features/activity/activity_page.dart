@@ -108,7 +108,7 @@ class _ActivityPageState extends ConsumerState<ActivityPage> {
               ],
               const SizedBox(height: 16),
               Text(
-                'KinPulse records GPS from this device. Accuracy depends on '
+                'Journey360 records GPS from this device. Accuracy depends on '
                 'your phone and surroundings.',
                 style: TextStyle(color: c.onSurfaceMuted, fontSize: 12.5),
               ),

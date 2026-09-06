@@ -141,7 +141,7 @@ class SettingsPage extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'KinPulse records GPS from this device. Background tracking is '
+            'Journey360 records GPS from this device. Background tracking is '
             'limited by each platform: the web has none, Android needs a '
             'foreground service, and iOS throttles background updates.',
             style: TextStyle(color: c.onSurfaceMuted, fontSize: 12),

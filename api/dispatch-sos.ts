@@ -22,8 +22,8 @@ export default async function dispatchSos(req: Request): Promise<Response> {
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
   const liveTrackingUrl = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
 
-  // Billing is intentionally absent: every KinPulse account is VIP by default.
-  console.info('KINPULSE_EMERGENCY_DISPATCH', {
+  // Billing is intentionally absent: every Journey360 account is VIP by default.
+  console.info('JOURNEY360_EMERGENCY_DISPATCH', {
     userId,
     userName,
     alertType,

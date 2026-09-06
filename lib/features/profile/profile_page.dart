@@ -51,7 +51,7 @@ class ProfilePage extends ConsumerWidget {
                   Text(name, style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 2),
                   Text(
-                    email ?? 'KinPulse member',
+                    email ?? 'Journey360 member',
                     style: TextStyle(color: c.onSurfaceMuted),
                   ),
                 ],

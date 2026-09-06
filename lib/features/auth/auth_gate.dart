@@ -57,7 +57,7 @@ class _ShellWithBanner extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         backend
-                          ? 'Using KinPulse without an account. Sign in to '
+                            ? 'Using Journey360 without an account. Sign in to '
                                 'sync and use circles.'
                           : 'Offline mode - journeys save on this device.',
                         style: TextStyle(fontSize: 11.5, color: c.onSurface),

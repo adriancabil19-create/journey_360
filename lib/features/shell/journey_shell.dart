@@ -12,7 +12,7 @@ import '../analytics/analytics_page.dart';
 import '../journey/tracking_controller.dart';
 import '../map/map_page.dart';
 
-/// The three-mode KinPulse shell: family safety, workouts, and performance.
+/// The three-mode Journey360 shell: family safety, workouts, and performance.
 class JourneyShell extends ConsumerStatefulWidget {
   const JourneyShell({super.key});
 
@@ -72,7 +72,7 @@ class _JourneyShellState extends ConsumerState<JourneyShell> {
     try {
       await _crashDetector.dispatch(
         userId: user.id,
-        userName: (user.userMetadata?['full_name'] as String?) ?? 'KinPulse member',
+        userName: (user.userMetadata?['full_name'] as String?) ?? 'Journey360 member',
         latitude: state.here!.latitude,
         longitude: state.here!.longitude,
         alertType: 'CRASH_DETECTED',

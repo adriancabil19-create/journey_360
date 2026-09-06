@@ -5,9 +5,9 @@
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>KinPulse uses your location to protect your circle and record workouts.</string>
+	<string>Journey360 uses your location to protect your circle and record workouts.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>KinPulse keeps recording and sharing your live location while a workout or safety mode is active.</string>
+	<string>Journey360 keeps recording and sharing your live location while a workout or safety mode is active.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Journey360 uses motion data to improve distance and driving-event estimates.</string>
 	<key>UIBackgroundModes</key>
@@ -18,7 +18,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>KinPulse</string>
+	<string>Journey360</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

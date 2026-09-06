@@ -89,7 +89,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                   const SizedBox(height: 18),
                   Text(
-                    'KinPulse',
+                    'Journey360',
                     textAlign: TextAlign.center,
                     style: Theme.of(context)
                         .textTheme
@@ -115,7 +115,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         const SizedBox(height: 4),
                         Text(
                           backend
-                              ? 'Welcome back to KinPulse.'
+                              ? 'Welcome back to Journey360.'
                               : 'Connect a Supabase project (see the README) '
                                   'to enable accounts and circles.',
                           style: TextStyle(

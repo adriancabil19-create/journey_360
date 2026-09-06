@@ -20,7 +20,7 @@ void main() {
     await tester.pumpWidget(await _bootApp());
     await tester.pump();
 
-    expect(find.text('KinPulse'), findsOneWidget);
+    expect(find.text('Journey360'), findsOneWidget);
     expect(find.text('Safety for your circle. Power for your next effort.'), findsOneWidget);
     expect(find.text('Get started'), findsOneWidget);
   });
@@ -36,7 +36,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 350));
 
-    // The floating glass nav shows the three KinPulse modes.
+    // The floating glass nav shows the three Journey360 modes.
     for (final icon in const [
       Icons.shield_rounded, // Circle, selected
       Icons.bolt_outlined,
