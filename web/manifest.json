@@ -1,0 +1,35 @@
+{
+    "name": "Journey360",
+    "short_name": "Journey360",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#E9EEF1",
+    "theme_color": "#1B8275",
+    "description": "Real-time location sharing, journeys and fitness tracking. Every journey. One place.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
