@@ -118,6 +118,7 @@ Key packages: `flutter_riverpod`, `supabase_flutter`, `geolocator`,
    - `supabase/migrations/002_journey360_core.sql`
    - `supabase/migrations/003_circle_management.sql`
    - `supabase/migrations/004_backend_contract.sql`
+  - `supabase/migrations/006_final_hardening.sql`
 3. Auth → Providers: enable **Email**.
 4. Project settings → API: copy the **Project URL** and the **publishable
    (anon) key**. Row Level Security is enabled by every migration — only the
