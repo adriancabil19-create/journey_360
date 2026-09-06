@@ -9,6 +9,7 @@ import '../../shared/components.dart';
 import '../activity/activity_history_page.dart';
 import '../circles/circles_page.dart';
 import '../settings/settings_page.dart';
+import '../settings/feature_pages.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -110,6 +111,24 @@ class ProfilePage extends ConsumerWidget {
               title: 'Settings',
               subtitle: 'Privacy, tracking, appearance',
               onTap: () => context.pushJourney(const SettingsPage()),
+            ),
+            _Row(
+              icon: Icons.info_outline_rounded,
+              title: 'About Journey360',
+              subtitle: 'Version, mission, and open source services',
+              onTap: () => context.pushJourney(const AboutPage()),
+            ),
+            _Row(
+              icon: Icons.privacy_tip_outlined,
+              title: 'Privacy Center',
+              subtitle: 'How location and activity data are handled',
+              onTap: () => context.pushJourney(const PrivacyPage()),
+            ),
+            _Row(
+              icon: Icons.description_outlined,
+              title: 'Terms of Use',
+              subtitle: 'Rules and safety limitations',
+              onTap: () => context.pushJourney(const TermsPage()),
             ),
             const SizedBox(height: 16),
             if (auth.isEnabled && auth.currentUser != null)

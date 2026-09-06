@@ -40,6 +40,15 @@ class SettingsController extends StateNotifier<UserSettings> {
   Future<void> setAutoPause(bool value) =>
       _update(state.copyWith(autoPauseEnabled: value));
 
+    Future<void> setLowBatteryAlerts(bool value) =>
+      _update(state.copyWith(lowBatteryAlerts: value));
+
+    Future<void> setSafeDriveAlerts(bool value) =>
+      _update(state.copyWith(safeDriveAlerts: value));
+
+    Future<void> setPlaceAlerts(bool value) =>
+      _update(state.copyWith(placeAlerts: value));
+
   Future<void> toggleSharing() {
     final next = state.sharingMode.isOn ? SharingMode.nobody : SharingMode.everyone;
     return setSharingMode(next);

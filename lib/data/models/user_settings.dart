@@ -14,6 +14,9 @@ class UserSettings {
     this.circleAlerts = true,
     this.socialAlerts = false,
     this.autoPauseEnabled = true,
+    this.lowBatteryAlerts = true,
+    this.safeDriveAlerts = true,
+    this.placeAlerts = true,
   });
 
   final ThemeMode themeMode;
@@ -24,6 +27,9 @@ class UserSettings {
   final bool circleAlerts;
   final bool socialAlerts;
   final bool autoPauseEnabled;
+  final bool lowBatteryAlerts;
+  final bool safeDriveAlerts;
+  final bool placeAlerts;
 
   UserSettings copyWith({
     ThemeMode? themeMode,
@@ -34,6 +40,9 @@ class UserSettings {
     bool? circleAlerts,
     bool? socialAlerts,
     bool? autoPauseEnabled,
+    bool? lowBatteryAlerts,
+    bool? safeDriveAlerts,
+    bool? placeAlerts,
   }) {
     return UserSettings(
       themeMode: themeMode ?? this.themeMode,
@@ -44,6 +53,9 @@ class UserSettings {
       circleAlerts: circleAlerts ?? this.circleAlerts,
       socialAlerts: socialAlerts ?? this.socialAlerts,
       autoPauseEnabled: autoPauseEnabled ?? this.autoPauseEnabled,
+      lowBatteryAlerts: lowBatteryAlerts ?? this.lowBatteryAlerts,
+      safeDriveAlerts: safeDriveAlerts ?? this.safeDriveAlerts,
+      placeAlerts: placeAlerts ?? this.placeAlerts,
     );
   }
 
@@ -56,6 +68,9 @@ class UserSettings {
         'circle_alerts': circleAlerts,
         'social_alerts': socialAlerts,
         'auto_pause_enabled': autoPauseEnabled,
+        'low_battery_alerts': lowBatteryAlerts,
+        'safe_drive_alerts': safeDriveAlerts,
+        'place_alerts': placeAlerts,
       };
 
   factory UserSettings.fromJson(Map<String, dynamic> json) => UserSettings(
@@ -72,5 +87,8 @@ class UserSettings {
         circleAlerts: json['circle_alerts'] as bool? ?? true,
         socialAlerts: json['social_alerts'] as bool? ?? false,
         autoPauseEnabled: json['auto_pause_enabled'] as bool? ?? true,
+        lowBatteryAlerts: json['low_battery_alerts'] as bool? ?? true,
+        safeDriveAlerts: json['safe_drive_alerts'] as bool? ?? true,
+        placeAlerts: json['place_alerts'] as bool? ?? true,
       );
 }

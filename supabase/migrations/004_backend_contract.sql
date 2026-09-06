@@ -7,6 +7,11 @@ alter table public.profiles
   add column if not exists username text,
   add column if not exists is_vip boolean not null default true;
 
+alter table public.user_settings
+  add column if not exists low_battery_alerts boolean not null default true,
+  add column if not exists safe_drive_alerts boolean not null default true,
+  add column if not exists place_alerts boolean not null default true;
+
 -- The dedicated engine uses this table for high-frequency workout presence.
 create table if not exists public.user_locations (
   user_id uuid primary key references public.profiles(id) on delete cascade,

@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers.dart';
 import '../../data/models/enums.dart';
 import '../../shared/components.dart';
+import '../../core/utils/page_transition.dart';
+import 'feature_pages.dart';
 import 'settings_controller.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -21,6 +23,26 @@ class SettingsPage extends ConsumerWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const _SectionTitle('Journey360 controls'),
+          _NavigationTile(
+            icon: Icons.notifications_active_outlined,
+            title: 'Smart Notifications',
+            subtitle: 'Low battery, safe drive, place, and Circle alerts',
+            onTap: () => context.pushJourney(const SmartNotificationsPage()),
+          ),
+          _NavigationTile(
+            icon: Icons.my_location_rounded,
+            title: 'Location Sharing',
+            subtitle: 'Choose who can see your live location',
+            onTap: () => context.pushJourney(const LocationSharingPage()),
+          ),
+          _NavigationTile(
+            icon: Icons.phone_android_rounded,
+            title: 'Activity Sharing',
+            subtitle: 'Control workout and activity visibility',
+            onTap: () => context.pushJourney(const ActivitySharingPage()),
+          ),
+          const SizedBox(height: 14),
           const NeoSectionHeader('Appearance'),
           _Segmented<ThemeMode>(
             value: settings.themeMode,
@@ -167,6 +189,50 @@ class SettingsPage extends ConsumerWidget {
       ],
     );
   }
+}
+
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle(this.title);
+  final String title;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Text(
+          title,
+          style: TextStyle(
+            color: context.colors.onSurfaceMuted,
+            fontWeight: FontWeight.w800,
+            fontSize: 12,
+            letterSpacing: 1.1,
+          ),
+        ),
+      );
+}
+
+class _NavigationTile extends StatelessWidget {
+  const _NavigationTile({required this.icon, required this.title, required this.subtitle, required this.onTap});
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: NeoCard(
+          onTap: onTap,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+          child: Row(
+            children: [
+              Icon(icon, color: context.colors.accent, size: 24),
+              const SizedBox(width: 12),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: TextStyle(fontWeight: FontWeight.w800, color: context.colors.onSurface)), const SizedBox(height: 3), Text(subtitle, style: TextStyle(color: context.colors.onSurfaceMuted, fontSize: 12))])),
+              Icon(Icons.chevron_right_rounded, color: context.colors.onSurfaceMuted),
+            ],
+          ),
+        ),
+      );
 }
 
 class _Tile extends StatelessWidget {

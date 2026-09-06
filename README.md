@@ -132,6 +132,11 @@ settings and live location; circle co-members may read each other's `locations`
 row; journeys are additionally readable by visibility (`public`, or `circle` when
 shared to a circle you belong to).
 
+The app includes dedicated mobile-first screens for Smart Notifications,
+Location Sharing, Activity Sharing, Circle Management, Invite Codes, Places,
+About, Privacy Center, and Terms of Use. These are available from the Circle
+sheet, Settings, and Profile surfaces.
+
 ## Environment variables
 
 The app reads these compile-time values (never hard-code them):

@@ -13,7 +13,7 @@ import '../../shared/components.dart';
 import '../journey/tracking_controller.dart';
 import '../settings/settings_controller.dart';
 import '../circles/circles_page.dart';
-import '../settings/settings_page.dart';
+import '../settings/feature_pages.dart';
 import '../vehicles/vehicles_page.dart';
 import 'places_page.dart';
 import 'location_permission_sheet.dart';
@@ -335,7 +335,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                   onManage: () => context.pushJourney(const CirclesPage()),
                   onAddPerson: () => context.pushJourney(const CirclesPage()),
                   onPlaces: () => context.pushJourney(const PlacesPage()),
-                  onSettings: () => context.pushJourney(const SettingsPage()),
+                  onSettings: () => context.pushJourney(const SmartNotificationsPage()),
                   onVehicles: () => context.pushJourney(const VehiclesPage()),
                 ),
               ),
