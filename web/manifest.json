@@ -1,12 +1,16 @@
 {
-    "name": "Journey360",
-    "short_name": "Journey360",
-    "start_url": ".",
+    "name": "KinPulse - Circle safety and workouts",
+    "short_name": "KinPulse",
+    "id": "/",
+    "start_url": "/",
+    "scope": "/",
     "display": "standalone",
-    "background_color": "#E9EEF1",
-    "theme_color": "#1B8275",
-    "description": "Real-time location sharing, journeys and fitness tracking. Every journey. One place.",
+    "display_override": ["window-controls-overlay", "standalone"],
+    "background_color": "#EFF4F5",
+    "theme_color": "#12857A",
+    "description": "Circle safety and athletic performance in one app.",
     "orientation": "portrait-primary",
+    "categories": ["health", "fitness", "lifestyle"],
     "prefer_related_applications": false,
     "icons": [
         {
