@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "if [ -d flutter ]; then (cd flutter && git pull); else git clone https://github.com/flutter/flutter.git --depth 1 -b stable flutter; fi && flutter/bin/flutter config --enable-web && flutter/bin/flutter build web --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY",
+  "buildCommand": "if [ -d flutter ]; then (cd flutter && git pull); else git clone https://github.com/flutter/flutter.git --depth 1 -b stable flutter; fi && flutter/bin/flutter config --enable-web && flutter/bin/flutter build web --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY --dart-define=SOS_ENDPOINT=$SOS_ENDPOINT",
   "outputDirectory": "build/web",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

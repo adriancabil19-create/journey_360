@@ -5,9 +5,9 @@
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Journey360 uses your location to record journeys and show your position to people you have chosen.</string>
+	<string>KinPulse uses your location to protect your circle and record workouts.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Journey360 can keep recording your journey and sharing your live location while the app is in the background.</string>
+	<string>KinPulse keeps recording and sharing your live location while a workout or safety mode is active.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Journey360 uses motion data to improve distance and driving-event estimates.</string>
 	<key>UIBackgroundModes</key>

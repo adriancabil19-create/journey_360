@@ -121,17 +121,20 @@ class _ActivityTrackingPageState extends ConsumerState<ActivityTrackingPage> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: _Panel(
-              state: state,
-              onPause: controller.pause,
-              onResume: controller.resume,
-              onFinish: () async {
-                final journey = await controller.finish();
-                if (!context.mounted || journey == null) return;
-                Navigator.of(context).pushReplacement(
-                  journeyRoute(ActivitySummaryPage(journey: journey)),
-                );
-              },
+            child: SafeArea(
+              top: false,
+              child: _Panel(
+                state: state,
+                onPause: controller.pause,
+                onResume: controller.resume,
+                onFinish: () async {
+                  final journey = await controller.finish();
+                  if (!context.mounted || journey == null) return;
+                  Navigator.of(context).pushReplacement(
+                    journeyRoute(ActivitySummaryPage(journey: journey)),
+                  );
+                },
+              ),
             ),
           ),
         ],

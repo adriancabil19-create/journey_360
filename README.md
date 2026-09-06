@@ -132,11 +132,12 @@ shared to a circle you belong to).
 
 ## Environment variables
 
-The app reads two compile-time values (never hard-code them):
+The app reads these compile-time values (never hard-code them):
 
 ```
 SUPABASE_URL
 SUPABASE_PUBLISHABLE_KEY
+SOS_ENDPOINT
 ```
 
 Do **not** put `SUPABASE_SERVICE_ROLE_KEY` in the app. With no values supplied,
@@ -207,11 +208,14 @@ build command clones the Flutter `stable` channel first, then builds web:
 1. Push this repo to GitHub, then **Add New… → Project** in Vercel and import it.
 2. Framework preset: **Other**. Leave build command / output dir as detected
    from `vercel.json`.
-3. Project → Settings → Environment Variables: add `SUPABASE_URL` and
-   `SUPABASE_PUBLISHABLE_KEY` (build still succeeds without them → offline mode).
-4. Supabase → Authentication → URL Configuration: add your Vercel domain
+3. Project → Settings → Environment Variables: add `SUPABASE_URL`,
+  `SUPABASE_PUBLISHABLE_KEY`, and `SOS_ENDPOINT`.
+4. Set `SOS_ENDPOINT` to
+  `https://your-domain.vercel.app/api/dispatch-sos` after the first deploy,
+  then redeploy so the Flutter web build includes it.
+5. Supabase → Authentication → URL Configuration: add your Vercel domain
    (e.g. `https://journey360.vercel.app`) to **Site URL** and **Redirect URLs**.
-5. Deploy. The SPA rewrite keeps Flutter routing working. First build is slow
+6. Deploy. The SPA rewrite keeps Flutter routing working. First build is slow
    (it downloads Flutter); later builds reuse the cached `flutter/` dir.
 
 Vercel hosts the **web frontend only**. It is not the GPS/background backend —
@@ -261,5 +265,6 @@ health-platform integrations.
 flutter analyze
 flutter test
 ```
-#   j o u r n e y _ 3 6 0  
+#   j o u r n e y _ 3 6 0 
+ 
  

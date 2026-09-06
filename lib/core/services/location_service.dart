@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../data/models/enums.dart';
 
@@ -54,7 +55,13 @@ class LocationService {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
       }
-      return _map(permission);
+      final access = _map(permission);
+      if (access == LocationAccess.granted &&
+          !kIsWeb &&
+          defaultTargetPlatform == TargetPlatform.android) {
+        await Permission.notification.request();
+      }
+      return access;
     } catch (_) {
       return LocationAccess.unavailable;
     }
