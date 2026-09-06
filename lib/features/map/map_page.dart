@@ -221,16 +221,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                       ),
                     ],
                   ),
-                  if (selectedCircle != null) ...[
-                    const SizedBox(height: 10),
-                    _CirclePicker(
-                      circles: circles,
-                      selected: selectedCircle,
-                      onSelected: (id) => ref
-                          .read(selectedCircleIdProvider.notifier)
-                          .state = id,
-                    ),
-                  ],
                   if (activeAlert != null) ...[
                     const SizedBox(height: 10),
                     GlassPanel(
@@ -308,8 +298,12 @@ class _MapPageState extends ConsumerState<MapPage> {
                 snapSizes: const [0.29, 0.52, 0.78],
                 builder: (context, scrollController) => _CircleHomeSheet(
                   circle: selectedCircle,
+                  circles: circles,
                   members: members,
                   scrollController: scrollController,
+                  onCircleSelected: (id) => ref
+                      .read(selectedCircleIdProvider.notifier)
+                      .state = id,
                   onManage: () => context.pushJourney(const CirclesPage()),
                   onAddPerson: () => context.pushJourney(const CirclesPage()),
                   onPlaces: () => context.pushJourney(const PlacesPage()),
@@ -403,66 +397,6 @@ class _MapPageState extends ConsumerState<MapPage> {
         SnackBar(content: Text('Could not send SOS: $error')),
       );
     }
-  }
-}
-
-class _CirclePicker extends StatelessWidget {
-  const _CirclePicker({
-    required this.circles,
-    required this.selected,
-    required this.onSelected,
-  });
-
-  final List<Circle> circles;
-  final Circle selected;
-  final ValueChanged<String> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    return GlassPanel(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      child: Row(
-        children: [
-          Icon(Icons.shield_rounded, color: c.accent, size: 18),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              selected.name,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: c.onSurface, fontWeight: FontWeight.w800),
-            ),
-          ),
-          PopupMenuButton<String>(
-            tooltip: 'Switch circle',
-            initialValue: selected.id,
-            onSelected: onSelected,
-            icon: Icon(Icons.expand_more_rounded, color: c.onSurfaceMuted),
-            itemBuilder: (context) => [
-              for (final circle in circles)
-                PopupMenuItem<String>(
-                  value: circle.id,
-                  child: Row(
-                    children: [
-                      Icon(
-                        circle.id == selected.id
-                            ? Icons.radio_button_checked
-                            : Icons.radio_button_unchecked,
-                        size: 18,
-                        color: circle.id == selected.id
-                            ? c.accent
-                            : c.onSurfaceMuted,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(circle.name),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
   }
 }
 
@@ -649,8 +583,10 @@ class _StatusCard extends StatelessWidget {
 class _CircleHomeSheet extends StatelessWidget {
   const _CircleHomeSheet({
     required this.circle,
+    required this.circles,
     required this.members,
     required this.scrollController,
+    required this.onCircleSelected,
     required this.onManage,
     required this.onAddPerson,
     required this.onPlaces,
@@ -659,8 +595,10 @@ class _CircleHomeSheet extends StatelessWidget {
   });
 
   final Circle circle;
+  final List<Circle> circles;
   final List<LiveLocation> members;
   final ScrollController scrollController;
+  final ValueChanged<String> onCircleSelected;
   final VoidCallback onManage;
   final VoidCallback onAddPerson;
   final VoidCallback onPlaces;
@@ -696,7 +634,23 @@ class _CircleHomeSheet extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(circle.name, style: Theme.of(context).textTheme.headlineSmall),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(circle.name, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall),
+                        ),
+                        if (circles.length > 1)
+                          PopupMenuButton<String>(
+                            tooltip: 'Switch group',
+                            onSelected: onCircleSelected,
+                            icon: Icon(Icons.expand_more_rounded, color: c.accent),
+                            itemBuilder: (context) => [
+                              for (final item in circles)
+                                PopupMenuItem(value: item.id, child: Text(item.name)),
+                            ],
+                          ),
+                      ],
+                    ),
                     const SizedBox(height: 3),
                     Text('${members.length} people in this circle', style: TextStyle(color: c.onSurfaceMuted)),
                   ],
