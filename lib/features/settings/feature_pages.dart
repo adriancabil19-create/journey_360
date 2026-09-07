@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
+import '../../config/app_config.dart';
 import '../../core/utils/page_transition.dart';
 import '../../data/models/circle.dart';
 import '../../data/models/enums.dart';
@@ -169,7 +170,34 @@ class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
   @override
-  Widget build(BuildContext context) => _FeatureScaffold(title: 'About Journey360', child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [const _InfoCard(icon: Icons.explore_rounded, title: 'Journey360', message: 'Circle safety and athletic performance in one app.'), const SizedBox(height: 20), const _SectionTitle('What Journey360 does'), const _BodyText('Journey360 helps you stay connected to the people you choose while you walk, run, cycle, drive, and explore. Location sharing is controlled by you and protected by Supabase row-level security.'), const SizedBox(height: 18), const _SectionTitle('Version'), const _BodyText('Journey360 1.0.0'), const SizedBox(height: 18), const _SectionTitle('Open source services'), const _BodyText('Maps use OpenStreetMap data. GPS accuracy and background behavior depend on your device and operating system.') ]));
+  Widget build(BuildContext context) {
+    final businessDetails = [
+      AppConfig.businessName,
+      AppConfig.businessAddress,
+      AppConfig.supportEmail,
+    ].where((value) => value.isNotEmpty).join('\n');
+    return _FeatureScaffold(
+      title: 'About Journey360',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const _InfoCard(icon: Icons.explore_rounded, title: 'Journey360', message: 'Circle safety and athletic performance in one app.'),
+          const SizedBox(height: 20),
+          const _SectionTitle('What Journey360 does'),
+          const _BodyText('Journey360 helps you stay connected to the people you choose while you walk, run, cycle, drive, and explore. Location sharing is controlled by you and protected by Supabase row-level security.'),
+          const SizedBox(height: 18),
+          const _SectionTitle('Business details'),
+          _BodyText(businessDetails.isEmpty ? 'Business identity and support contact are not configured for this build.' : businessDetails),
+          const SizedBox(height: 18),
+          const _SectionTitle('Version'),
+          const _BodyText('Journey360 1.0.0'),
+          const SizedBox(height: 18),
+          const _SectionTitle('Open source services and media'),
+          const _BodyText('Maps use OpenStreetMap data and display attribution. This build contains no bundled stock or third-party marketing images. User-provided profile images are fetched only from their supplied URLs. GPS accuracy and background behavior depend on your device and operating system.'),
+        ],
+      ),
+    );
+  }
 }
 
 class TermsPage extends StatelessWidget {
@@ -183,7 +211,35 @@ class PrivacyPage extends StatelessWidget {
   const PrivacyPage({super.key});
 
   @override
-  Widget build(BuildContext context) => _FeatureScaffold(title: 'Privacy Center', child: const _LegalContent(title: 'Journey360 Privacy Notice', sections: {'Location data': 'When sharing is enabled, Journey360 may transmit your current location, accuracy, speed, battery level, and activity state to your configured Supabase project for the people authorized by your Circle.', 'Activity data': 'Completed activities may include routes, distance, duration, pace, elevation, and calories. Visibility is controlled by your activity sharing setting.', 'Your choices': 'You can stop sharing, remove saved places, leave Circles, delete local activity data, or revoke location permission in device settings.', 'Security': 'Access is restricted by Supabase authentication and row-level security policies. No system can guarantee absolute security.', 'Contact': 'For privacy questions, contact the Journey360 project owner through the support channel associated with your deployment.'}));
+  Widget build(BuildContext context) => _FeatureScaffold(title: 'Privacy Center', child: _LegalContent(title: 'Journey360 Privacy Notice', sections: {
+    'Location data': 'When sharing is enabled, Journey360 may transmit your current location, accuracy, speed, battery level, and activity state to the configured Supabase project for the people authorized by your Circle. Location is sensitive personal information and should only be shared with people you trust.',
+    'Activity data': 'Completed activities may include routes, distance, duration, pace, elevation, and calories. Visibility is controlled by your activity sharing setting.',
+    'Third parties and retention': 'Supabase hosts account and synchronized data for the deployment owner. OpenStreetMap tile servers may receive network requests needed to display the map. Journey360 currently has no advertising SDK, analytics SDK, tracking pixel, or embedded third-party media. Data is retained while needed to provide the service or until you request deletion, subject to backups and legal obligations.',
+    'Your choices': 'You can stop sharing, remove saved places, leave Circles, delete local activity data, revoke location permission in device settings, or request account and synchronized-data deletion from the configured privacy contact.',
+    'Security and children': 'Access is restricted by Supabase authentication and row-level security policies. No system can guarantee absolute security. Do not use the service for children without the required parental or guardian permissions.',
+    'Contact': AppConfig.privacyEmail.isEmpty ? 'A privacy contact has not been configured for this deployment. The operator must configure PRIVACY_EMAIL before production release.' : 'Privacy contact: ${AppConfig.privacyEmail}',
+  }));
+}
+
+class CookiePolicyPage extends StatelessWidget {
+  const CookiePolicyPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => const _FeatureScaffold(title: 'Cookie Policy', child: _LegalContent(title: 'Journey360 Cookie Policy', sections: {
+    'Current use': 'Journey360 does not currently use advertising cookies, analytics cookies, tracking pixels, fingerprinting, or third-party advertising embeds. The web build may use browser storage for app preferences and an interrupted journey; this is necessary for requested functionality rather than behavioral advertising.',
+    'Third-party services': 'Supabase may use strictly necessary session mechanisms for authentication. OpenStreetMap tile requests are made when a map is displayed. Review those providers\' policies before production launch and document any additional SDK or embed that is enabled.',
+    'Your choices': 'You can clear browser storage or sign out to remove local session state. If optional analytics or marketing tracking is added later, it must remain disabled until you provide informed consent and a way to withdraw it.',
+  }));
+}
+
+class RefundPolicyPage extends StatelessWidget {
+  const RefundPolicyPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => const _FeatureScaffold(title: 'Refund Policy', child: _LegalContent(title: 'Journey360 Refund Policy', sections: {
+    'No paid service yet': 'Journey360 does not currently process payments, subscriptions, or in-app purchases. No refund process is active because payment is bypassed.',
+    'Future changes': 'If paid features are introduced, pricing, billing terms, cancellation, renewal, statutory consumer rights, and refund instructions will be published before payment is enabled. No payment should be requested under this version of the app.',
+  }));
 }
 
 class _FeatureScaffold extends StatelessWidget {
@@ -224,7 +280,6 @@ class _ToggleRow extends StatelessWidget {
   final IconData icon;
   final bool value;
   final ValueChanged<bool> onChanged;
-  @override
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.only(bottom: 10),

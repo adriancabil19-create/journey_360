@@ -189,7 +189,9 @@ class _GlassSurfaceState extends State<GlassSurface> {
 
     if (!tappable) return panel;
 
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      child: InkWell(
       onTapDown: widget.pressable ? (_) => setState(() => _down = true) : null,
       onTapUp: widget.pressable ? (_) => setState(() => _down = false) : null,
       onTapCancel:
@@ -200,6 +202,7 @@ class _GlassSurfaceState extends State<GlassSurface> {
         duration: const Duration(milliseconds: 110),
         curve: Curves.easeOut,
         child: panel,
+      ),
       ),
     );
   }

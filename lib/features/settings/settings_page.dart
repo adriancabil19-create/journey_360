@@ -285,8 +285,12 @@ class _Segmented<T> extends StatelessWidget {
         children: [
           for (final entry in options.entries)
             Expanded(
-              child: GestureDetector(
-                onTap: () => onChanged(entry.key),
+              child: Semantics(
+                button: true,
+                selected: entry.key == value,
+                label: entry.value,
+                child: InkWell(
+                  onTap: () => onChanged(entry.key),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 160),
                   padding: const EdgeInsets.symmetric(vertical: 11),
@@ -314,6 +318,7 @@ class _Segmented<T> extends StatelessWidget {
                           : c.onSurfaceMuted,
                     ),
                   ),
+                ),
                 ),
               ),
             ),

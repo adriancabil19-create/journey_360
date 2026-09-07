@@ -25,12 +25,18 @@ class AuthRepository {
     required String username,
     required String email,
     required String password,
+    required String consentedAt,
   }) async {
     final c = _require();
     final res = await c.auth.signUp(
       email: email.trim(),
       password: password,
-      data: {'full_name': fullName.trim(), 'username': username.trim()},
+      data: {
+        'full_name': fullName.trim(),
+        'username': username.trim(),
+        'legal_consent_at': consentedAt,
+        'legal_consent_version': '2026-09-07',
+      },
     );
     // With email confirmation on, session is null until the link is clicked.
     return res.session == null

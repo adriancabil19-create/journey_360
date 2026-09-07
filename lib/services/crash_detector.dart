@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:sensors_plus/sensors_plus.dart';
 
@@ -27,13 +28,25 @@ class CrashDetector {
   DateTime? _lastDetection;
 
   void start({required Future<void> Function(CrashEvent event) onCrash}) {
-    _subscription ??= accelerometerEventStream().listen((event) {
-      final gForce = _magnitude(event) / 9.80665;
-      final last = _lastDetection;
-      if (gForce < thresholdG || (last != null && DateTime.now().difference(last) < cooldown)) return;
-      _lastDetection = DateTime.now();
-      unawaited(onCrash(CrashEvent(gForce: gForce, detectedAt: _lastDetection!)));
-    });
+    if (kIsWeb || _subscription != null) return;
+    try {
+      _subscription = accelerometerEventStream().listen(
+        (event) {
+          final gForce = _magnitude(event) / 9.80665;
+          final last = _lastDetection;
+          if (gForce < thresholdG ||
+              (last != null && DateTime.now().difference(last) < cooldown)) {
+            return;
+          }
+          _lastDetection = DateTime.now();
+          unawaited(onCrash(CrashEvent(gForce: gForce, detectedAt: _lastDetection!)));
+        },
+        onError: (_) => _subscription = null,
+        cancelOnError: true,
+      );
+    } catch (_) {
+      _subscription = null;
+    }
   }
 
   Future<http.Response> dispatch({

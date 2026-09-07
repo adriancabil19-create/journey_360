@@ -130,6 +130,18 @@ class ProfilePage extends ConsumerWidget {
               subtitle: 'Rules and safety limitations',
               onTap: () => context.pushJourney(const TermsPage()),
             ),
+            _Row(
+              icon: Icons.cookie_outlined,
+              title: 'Cookie Policy',
+              subtitle: 'Storage, analytics, and third-party services',
+              onTap: () => context.pushJourney(const CookiePolicyPage()),
+            ),
+            _Row(
+              icon: Icons.receipt_long_outlined,
+              title: 'Refund Policy',
+              subtitle: 'Payment status and future billing terms',
+              onTap: () => context.pushJourney(const RefundPolicyPage()),
+            ),
             const SizedBox(height: 16),
             if (auth.isEnabled && auth.currentUser != null)
               NeoButton(

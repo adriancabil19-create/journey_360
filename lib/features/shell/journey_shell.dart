@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -53,7 +54,7 @@ class _JourneyShellState extends ConsumerState<JourneyShell> {
   void initState() {
     super.initState();
     _crashDetector = CrashDetector(endpoint: AppConfig.sosEndpoint);
-    _crashDetector.start(onCrash: _showCrashAlert);
+    if (!kIsWeb) _crashDetector.start(onCrash: _showCrashAlert);
   }
 
   Future<void> _showCrashAlert(CrashEvent event) async {
@@ -193,10 +194,13 @@ class _NavButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: AnimatedContainer(
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: item.label,
+      child: InkWell(
+        onTap: onTap,
+        child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
         padding: EdgeInsets.symmetric(horizontal: selected ? 14 : 10, vertical: 8),
@@ -248,6 +252,7 @@ class _NavButton extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

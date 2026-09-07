@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
+import '../../core/utils/page_transition.dart';
+import '../settings/feature_pages.dart';
 import '../../shared/components.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
@@ -18,6 +20,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final _password = TextEditingController();
   final _confirm = TextEditingController();
   bool _busy = false;
+  bool _consentGiven = false;
   String? _message;
 
   @override
@@ -43,6 +46,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       setState(() => _message = 'Passwords do not match.');
       return;
     }
+    if (!_consentGiven) {
+      setState(() => _message = 'Accept the Terms of Use and Privacy Notice to continue.');
+      return;
+    }
     setState(() {
       _busy = true;
       _message = null;
@@ -53,6 +60,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             username: _username.text,
             email: _email.text,
             password: _password.text,
+            consentedAt: DateTime.now().toUtc().toIso8601String(),
           );
       if (!mounted) return;
       if (note != null) {
@@ -117,6 +125,34 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             onSubmitted: (_) => _submit(),
           ),
           const SizedBox(height: 20),
+          Semantics(
+            container: true,
+            label: 'Agree to the Terms of Use and Privacy Notice',
+            child: CheckboxListTile(
+              value: _consentGiven,
+              onChanged: _busy
+                  ? null
+                  : (value) => setState(() => _consentGiven = value ?? false),
+              controlAffinity: ListTileControlAffinity.leading,
+              contentPadding: EdgeInsets.zero,
+              title: Wrap(
+                children: [
+                  const Text('I agree to the '),
+                  InkWell(
+                    onTap: () => context.pushJourney(const TermsPage()),
+                    child: Text('Terms of Use', style: TextStyle(color: c.accent, fontWeight: FontWeight.w700)),
+                  ),
+                  const Text(' and '),
+                  InkWell(
+                    onTap: () => context.pushJourney(const PrivacyPage()),
+                    child: Text('Privacy Notice', style: TextStyle(color: c.accent, fontWeight: FontWeight.w700)),
+                  ),
+                  const Text('.'),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
           NeoButton(
             label: 'Create account',
             busy: _busy,

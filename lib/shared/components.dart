@@ -146,7 +146,11 @@ class _NeoButtonState extends State<NeoButton> {
 
     return Opacity(
       opacity: enabled ? 1 : 0.5,
-      child: GestureDetector(
+      child: Semantics(
+        button: true,
+        enabled: enabled,
+        label: widget.label,
+        child: InkWell(
         onTapDown: enabled ? (_) => setState(() => _down = true) : null,
         onTapUp: enabled ? (_) => setState(() => _down = false) : null,
         onTapCancel: enabled ? () => setState(() => _down = false) : null,
@@ -160,6 +164,7 @@ class _NeoButtonState extends State<NeoButton> {
             decoration: decoration,
             child: content,
           ),
+        ),
         ),
       ),
     );
@@ -186,9 +191,13 @@ class NeoIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final button = GestureDetector(
-      onTap: onTap,
-      child: GlassSurface(
+    final button = Semantics(
+      button: true,
+      enabled: onTap != null,
+      label: tooltip,
+      child: InkWell(
+        onTap: onTap,
+        child: GlassSurface(
         onTap: onTap,
         radius: size / 2,
         blur: 18,
@@ -197,6 +206,7 @@ class NeoIconButton extends StatelessWidget {
           width: size,
           height: size,
           child: Icon(icon, color: tone ?? c.accent, size: size * 0.46),
+        ),
         ),
       ),
     );
