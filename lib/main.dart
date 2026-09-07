@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'config/app_config.dart';
+import 'config/release_readiness.dart';
 import 'core/providers.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/auth_gate.dart';
@@ -11,6 +12,19 @@ import 'features/settings/settings_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Non-fatal in debug: loudly list anything that must be configured before a
+  // production release. Release builds surface the same list in Settings.
+  assert(() {
+    final blockers = ReleaseReadiness.blockers;
+    if (blockers.isNotEmpty) {
+      debugPrint('[release-readiness] ${blockers.length} unmet requirement(s):');
+      for (final b in blockers) {
+        debugPrint('  - (${b.id}) ${b.summary} -> ${b.fix}');
+      }
+    }
+    return true;
+  }());
 
   if (AppConfig.hasSupabase) {
     try {

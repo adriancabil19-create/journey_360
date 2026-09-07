@@ -23,6 +23,8 @@ class AppTheme {
 
     final textColor = c.onSurface;
     return base.copyWith(
+      // A clearly visible keyboard-focus highlight for InkWell-based controls.
+      focusColor: c.accent.withValues(alpha: 0.30),
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,

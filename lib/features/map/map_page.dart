@@ -451,23 +451,33 @@ class _MemberPin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => showModalBottomSheet<void>(
-        context: context,
-        backgroundColor: Colors.transparent,
-        builder: (_) => _MemberSheet(member: member),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          NeoAvatar(
-            name: member.displayName,
-            radius: 20,
-            online: member.isOnline,
-            imageUrl: member.avatarUrl,
-          ),
-          Icon(Icons.arrow_drop_down, color: context.colors.accent, size: 22),
-        ],
+    // Rendered inside flutter_map's marker layer, which has no Material
+    // ancestor, so this stays a GestureDetector with an explicit button role.
+    return Semantics(
+      button: true,
+      label: '${member.displayName}, '
+          '${member.isOnline ? 'online' : 'offline'}. Open details',
+      child: GestureDetector(
+        onTap: () => showModalBottomSheet<void>(
+          context: context,
+          backgroundColor: Colors.transparent,
+          builder: (_) => _MemberSheet(member: member),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ExcludeSemantics(
+              child: NeoAvatar(
+                name: member.displayName,
+                radius: 20,
+                online: member.isOnline,
+                imageUrl: member.avatarUrl,
+              ),
+            ),
+            Icon(Icons.arrow_drop_down,
+                color: context.colors.accent, size: 22),
+          ],
+        ),
       ),
     );
   }
@@ -776,13 +786,20 @@ class _QuickAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Expanded(
-        child: GestureDetector(
-          onTap: onTap,
-          child: Column(children: [
-            Container(width: 50, height: 50, decoration: BoxDecoration(color: color.withValues(alpha: .14), shape: BoxShape.circle), child: Icon(icon, color: color)),
-            const SizedBox(height: 6),
-            Text(label, style: TextStyle(color: context.colors.onSurfaceMuted, fontSize: 12, fontWeight: FontWeight.w700)),
-          ]),
+        child: Semantics(
+          button: true,
+          label: label,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onTap,
+            child: Column(children: [
+              ExcludeSemantics(
+                child: Container(width: 50, height: 50, decoration: BoxDecoration(color: color.withValues(alpha: .14), shape: BoxShape.circle), child: Icon(icon, color: color)),
+              ),
+              const SizedBox(height: 6),
+              Text(label, style: TextStyle(color: context.colors.onSurfaceMuted, fontSize: 12, fontWeight: FontWeight.w700)),
+            ]),
+          ),
         ),
       );
 }

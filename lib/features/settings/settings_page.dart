@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../config/release_readiness.dart';
 import '../../core/providers.dart';
 import '../../data/models/enums.dart';
 import '../../shared/components.dart';
@@ -23,6 +24,7 @@ class SettingsPage extends ConsumerWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const _ReleaseReadinessBanner(),
           const _SectionTitle('Journey360 controls'),
           _NavigationTile(
             icon: Icons.notifications_active_outlined,
@@ -187,6 +189,63 @@ class SettingsPage extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Shown at the top of Settings whenever the build is missing legal / business
+/// configuration that a public release requires. Hidden once everything is set.
+class _ReleaseReadinessBanner extends StatelessWidget {
+  const _ReleaseReadinessBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final blockers = ReleaseReadiness.blockers;
+    if (blockers.isEmpty) return const SizedBox.shrink();
+    final c = context.colors;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Semantics(
+        container: true,
+        label: 'Release configuration warning',
+        child: NeoCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.warning_amber_rounded, color: c.danger, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Not ready for public release',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        color: c.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'This build is missing required configuration. It is safe for '
+                'testing but must not be published to end users until resolved:',
+                style: TextStyle(color: c.onSurfaceMuted, fontSize: 12.5),
+              ),
+              const SizedBox(height: 8),
+              for (final b in blockers)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    '•  ${b.summary}',
+                    style: TextStyle(color: c.onSurface, fontSize: 12.5),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

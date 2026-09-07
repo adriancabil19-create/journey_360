@@ -108,20 +108,26 @@ class _Chip extends StatelessWidget {
     final c = context.colors;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: selected
-              ? Glass.fill(c, radius: 14, tint: c.accent)
-              : Glass.fill(c, radius: 14),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 12.5,
-              color: selected ? c.accent : c.onSurfaceMuted,
+      child: Semantics(
+        button: true,
+        selected: selected,
+        label: '$label filter',
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: selected
+                ? Glass.fill(c, radius: 14, tint: c.accent)
+                : Glass.fill(c, radius: 14),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 12.5,
+                color: selected ? c.accent : c.onSurfaceMuted,
+              ),
             ),
           ),
         ),

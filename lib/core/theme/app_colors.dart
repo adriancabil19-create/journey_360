@@ -77,7 +77,8 @@ class AppColors extends ThemeExtension<AppColors> {
     accent: Color(0xFF12857A),
     accentSoft: Color(0xFFD6EBE7),
     onSurface: Color(0xFF122228),
-    onSurfaceMuted: Color(0xFF5A6C74),
+    // Darkened from #5A6C74 to clear WCAG AA (4.5:1) for small text on glass.
+    onSurfaceMuted: Color(0xFF4C5E66),
     shadowDark: Color(0x2A5B7A82),
     shadowLight: Color(0xFFFFFFFF),
     glassFill: Color(0xC2FFFFFF),
@@ -104,7 +105,8 @@ class AppColors extends ThemeExtension<AppColors> {
     accent: Color(0xFF3FC3B1),
     accentSoft: Color(0xFF1C3733),
     onSurface: Color(0xFFEAF2F3),
-    onSurfaceMuted: Color(0xFF8D9BA1),
+    // Lightened from #8D9BA1 to clear WCAG AA (4.5:1) for small text on glass.
+    onSurfaceMuted: Color(0xFF9AA8AE),
     shadowDark: Color(0x66000000),
     shadowLight: Color(0x0FFFFFFF),
     glassFill: Color(0xC22A343B),

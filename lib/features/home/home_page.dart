@@ -113,15 +113,24 @@ class HomePage extends ConsumerWidget {
               const SizedBox(height: 24),
               NeoSectionHeader(
                 'Recent',
-                trailing: GestureDetector(
-                  onTap: () =>
-                      context.pushJourney(const ActivityHistoryPage()),
-                  child: Text(
-                    'See all',
-                    style: TextStyle(
-                      color: c.accent,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12,
+                trailing: Semantics(
+                  button: true,
+                  label: 'See all recent journeys',
+                  child: InkWell(
+                    onTap: () =>
+                        context.pushJourney(const ActivityHistoryPage()),
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 4),
+                      child: Text(
+                        'See all',
+                        style: TextStyle(
+                          color: c.accent,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
+                        ),
+                      ),
                     ),
                   ),
                 ),

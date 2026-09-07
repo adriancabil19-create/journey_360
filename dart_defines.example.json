@@ -1,4 +1,9 @@
 {
   "SUPABASE_URL": "https://your-project.supabase.co",
-  "SUPABASE_PUBLISHABLE_KEY": "your-publishable-or-anon-key"
+  "SUPABASE_PUBLISHABLE_KEY": "your-publishable-or-anon-key",
+  "SOS_ENDPOINT": "",
+  "BUSINESS_NAME": "Your registered business or operator name",
+  "BUSINESS_ADDRESS": "Principal place of business, City, Philippines",
+  "PRIVACY_EMAIL": "privacy@yourdomain.example",
+  "SUPPORT_EMAIL": "support@yourdomain.example"
 }

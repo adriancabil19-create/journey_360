@@ -123,21 +123,33 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               color: c.onSurfaceMuted, fontSize: 12.5),
                         ),
                         const SizedBox(height: 18),
-                        NeoTextField(
-                          controller: _email,
-                          label: 'Email',
-                          icon: Icons.mail_outline,
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.next,
-                        ),
-                        const SizedBox(height: 14),
-                        NeoTextField(
-                          controller: _password,
-                          label: 'Password',
-                          icon: Icons.lock_outline,
-                          obscureText: true,
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (_) => backend ? _signIn() : null,
+                        AutofillGroup(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              NeoTextField(
+                                controller: _email,
+                                label: 'Email',
+                                icon: Icons.mail_outline,
+                                keyboardType: TextInputType.emailAddress,
+                                textInputAction: TextInputAction.next,
+                                autofillHints: const [AutofillHints.email],
+                                enabled: backend && !_busy,
+                              ),
+                              const SizedBox(height: 14),
+                              NeoTextField(
+                                controller: _password,
+                                label: 'Password',
+                                icon: Icons.lock_outline,
+                                obscureText: true,
+                                textInputAction: TextInputAction.done,
+                                autofillHints: const [AutofillHints.password],
+                                enabled: backend && !_busy,
+                                onSubmitted: (_) =>
+                                    backend ? _signIn() : null,
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 18),
                         NeoButton(
@@ -165,12 +177,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ),
                         if (_message != null) ...[
                           const SizedBox(height: 4),
-                          Text(
-                            _message!,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: c.accent,
-                                fontWeight: FontWeight.w600),
+                          Semantics(
+                            liveRegion: true,
+                            child: Text(
+                              _message!,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: c.accent,
+                                  fontWeight: FontWeight.w600),
+                            ),
                           ),
                         ],
                       ],

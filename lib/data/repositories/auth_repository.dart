@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../config/app_config.dart';
+
 /// Authentication over Supabase (MD section 8). When [client] is null the app is
 /// running in offline mode and these calls are unavailable.
 class AuthRepository {
@@ -35,7 +37,7 @@ class AuthRepository {
         'full_name': fullName.trim(),
         'username': username.trim(),
         'legal_consent_at': consentedAt,
-        'legal_consent_version': '2026-09-07',
+        'legal_consent_version': AppConfig.legalConsentVersion,
       },
     );
     // With email confirmation on, session is null until the link is clicked.

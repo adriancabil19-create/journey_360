@@ -226,6 +226,12 @@ class NeoTextField extends StatelessWidget {
     this.keyboardType,
     this.textInputAction,
     this.onSubmitted,
+    this.onChanged,
+    this.focusNode,
+    this.errorText,
+    this.enabled = true,
+    this.autofillHints,
+    this.autofocus = false,
   });
 
   final TextEditingController controller;
@@ -236,10 +242,19 @@ class NeoTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onSubmitted;
+  final ValueChanged<String>? onChanged;
+  final FocusNode? focusNode;
+
+  /// Validation message shown under the field and exposed to screen readers.
+  final String? errorText;
+  final bool enabled;
+  final Iterable<String>? autofillHints;
+  final bool autofocus;
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    final hasError = errorText != null && errorText!.isNotEmpty;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -256,27 +271,51 @@ class NeoTextField extends StatelessWidget {
           const SizedBox(height: 8),
         ],
         Container(
-          decoration: Glass.fill(c, radius: 16),
-          child: TextField(
-            controller: controller,
-            obscureText: obscureText,
-            keyboardType: keyboardType,
-            textInputAction: textInputAction,
-            onSubmitted: onSubmitted,
-            style: TextStyle(color: c.onSurface, fontWeight: FontWeight.w600),
-            decoration: InputDecoration(
-              hintText: hint,
-              prefixIcon:
-                  icon == null ? null : Icon(icon, color: c.onSurfaceMuted),
-              filled: false,
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: hasError
+              ? (Glass.fill(c, radius: 16).copyWith(
+                  border: Border.all(color: c.danger, width: 1.5)))
+              : Glass.fill(c, radius: 16),
+          child: Semantics(
+            textField: true,
+            label: label,
+            child: TextField(
+              controller: controller,
+              focusNode: focusNode,
+              enabled: enabled,
+              autofocus: autofocus,
+              obscureText: obscureText,
+              keyboardType: keyboardType,
+              textInputAction: textInputAction,
+              autofillHints: enabled ? autofillHints : null,
+              onSubmitted: onSubmitted,
+              onChanged: onChanged,
+              style: TextStyle(color: c.onSurface, fontWeight: FontWeight.w600),
+              decoration: InputDecoration(
+                hintText: hint,
+                prefixIcon:
+                    icon == null ? null : Icon(icon, color: c.onSurfaceMuted),
+                filled: false,
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              ),
             ),
           ),
         ),
+        if (hasError) ...[
+          const SizedBox(height: 6),
+          Text(
+            errorText!,
+            style: TextStyle(
+              color: c.danger,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -395,7 +434,15 @@ class NeoAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.colors;
     final bg = color ?? c.accent;
-    return Stack(
+    final statusLabel = online == null
+        ? ''
+        : online!
+            ? ', online'
+            : ', offline';
+    return Semantics(
+      image: imageUrl != null,
+      label: 'Avatar for $name$statusLabel',
+      child: Stack(
       clipBehavior: Clip.none,
       children: [
         Container(
@@ -410,7 +457,12 @@ class NeoAvatar extends StatelessWidget {
             shape: BoxShape.circle,
             image: imageUrl != null
                 ? DecorationImage(
-                    image: NetworkImage(imageUrl!), fit: BoxFit.cover)
+                    image: NetworkImage(imageUrl!),
+                    fit: BoxFit.cover,
+                    // A broken avatar URL must not throw or spam the log; the
+                    // gradient circle stays as the fallback.
+                    onError: (_, _) {},
+                  )
                 : null,
             border: Border.all(color: c.glassHighlight, width: 1.5),
             boxShadow: [
@@ -447,6 +499,7 @@ class NeoAvatar extends StatelessWidget {
             ),
           ),
       ],
+      ),
     );
   }
 }
@@ -619,9 +672,11 @@ class SharingPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    return GestureDetector(
-      onTap: onTap,
+    return Semantics(
+      toggled: on,
+      label: on ? 'Location sharing on' : 'Location sharing off',
       child: GlassSurface(
+        onTap: onTap,
         radius: 24,
         blur: 18,
         tint: on ? c.online : null,
